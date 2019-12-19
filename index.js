@@ -125,16 +125,17 @@ BraviaHomebridgeTV.prototype._update = function(config, inputSourceId) {
 };
 
 BraviaHomebridgeTV.prototype.setPowerState = function(state, callback) {
+  var toPoweredOn = state === 1;
   var bravia = this.bravia;
   this.getPowerState((function(err, isPoweredOn) {
-    this.log("setPowerState to:"+state +" from "+ isPoweredOn);
-    if(!err && state !== isPoweredOn) {
-      bravia.system.invoke('setPowerStatus', '1.0', { status: state }).
-      then(() => callback(null, state))
-      .catch(error => callback(err, isPoweredOn));
+    this.log("setPowerState to:"+toPoweredOn +" from "+ isPoweredOn);
+    if(!err && toPoweredOn !== isPoweredOn) {
+      bravia.system.invoke('setPowerStatus', '1.0', { status: toPoweredOn }).
+      then(() => callback(null))
+      .catch(error => callback(err));
     }
     else {
-      callback(err, isPoweredOn);
+      callback(err);
     }
   }).bind(this));
 };
@@ -151,7 +152,7 @@ BraviaHomebridgeTV.prototype.getPowerState = function(callback) {
       });
     }
   }).then(info => {
-    callback(null, info.status === "active");
+    callback(null, info.status === "active" ? 1 : 0);
   })
   .catch(error => {
     callback(error);
