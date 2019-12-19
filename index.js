@@ -109,7 +109,7 @@ BraviaHomebridgeTV.prototype._getSourceType = function(source) {
 
 BraviaHomebridgeTV.prototype._update = function(config, inputSourceId) {
   var bravia = this.bravia;
-  this.getActiveIdentifier(function(err, activeId) {
+  this.getActiveIdentifier((function(err, activeId) {
     if(err) {
       this.tvService.getCharacteristic(Characteristic.Active).updateValue(false);
       this.tvService.getCharacteristic(Characteristic.ActiveIdentifier).updateValue(0);
@@ -118,12 +118,12 @@ BraviaHomebridgeTV.prototype._update = function(config, inputSourceId) {
       this.tvService.getCharacteristic(Characteristic.Active).updateValue(true);
       this.tvService.getCharacteristic(Characteristic.ActiveIdentifier).updateValue(activeId);
     }
-  });
+  }).bind(this));
 };
 
 BraviaHomebridgeTV.prototype.setPowerState = function(state, callback) {
   var bravia = this.bravia;
-  this.getPowerState(function(err, isPoweredOn) {
+  this.getPowerState((function(err, isPoweredOn) {
     if(!err && state !== isPoweredOn) {
       bravia.system.invoke('setPowerStatus', '1.0', { status: state }).
       then(() => callback(null, state))
@@ -132,7 +132,7 @@ BraviaHomebridgeTV.prototype.setPowerState = function(state, callback) {
     else {
       callback(err, isPoweredOn);
     }
-  });
+  }).bind(this));
 };
 
 BraviaHomebridgeTV.prototype.getPowerState = function(callback) {
@@ -160,7 +160,7 @@ BraviaHomebridgeTV.prototype.setActiveIdentifier = function(identifier, callback
     return;
   }
   var bravia = this.bravia;
-  this.getPowerState(function(err, isPoweredOn) {
+  this.getPowerState((function(err, isPoweredOn) {
     if(err) {
       callback(err);
     }
@@ -198,12 +198,12 @@ BraviaHomebridgeTV.prototype.setActiveIdentifier = function(identifier, callback
         .catch(error => callback(error));
       }
     }
-  });
+  }).bind(this));
 };
 
 BraviaHomebridgeTV.prototype.getActiveIdentifier = function(callback) {
   var bravia = this.bravia;
-  this.getPowerState(function(err, isPoweredOn) {
+  this.getPowerState((function(err, isPoweredOn) {
     if(err) {
       callback(err);
     }
@@ -243,23 +243,23 @@ BraviaHomebridgeTV.prototype.getActiveIdentifier = function(callback) {
       })
       .catch(error => callback(error));
     }
-  });
+  }).bind(this));
 };
 
 BraviaHomebridgeTV.prototype.getMuted = function(callback) {
-  this._getVolumeInformation(function(err, volumeInformation) {
+  this._getVolumeInformation((function(err, volumeInformation) {
     if(!err) {
       callback(err, volumeInformation.mute);
     }
     else {
       callback(err);
     }
-  });
+  }).bind(this));
 };
 
 BraviaHomebridgeTV.prototype.setMuted = function(muted, callback) {
   var bravia = this.bravia;
-  this.getPowerState(function(err, isPoweredOn) {
+  this.getPowerState((function(err, isPoweredOn) {
     if(err) {
       callback(err);
     }
@@ -271,12 +271,12 @@ BraviaHomebridgeTV.prototype.setMuted = function(muted, callback) {
       then(() => callback(null, muted))
       .catch(error => callback(error));
     }
-  });
+  }).bind(this));
 };
 
 BraviaHomebridgeTV.prototype.setVolumeSelector = function(key, callback) {
   var bravia = this.bravia;
-  this.getPowerState(function(err, isPoweredOn) {
+  this.getPowerState((function(err, isPoweredOn) {
     if(err) {
       callback(err);
     }
@@ -292,23 +292,23 @@ BraviaHomebridgeTV.prototype.setVolumeSelector = function(key, callback) {
       then(() => callback(null, key))
       .catch(error => callback(error));
     }
-  });
+  }).bind(this));
 };
 
 BraviaHomebridgeTV.prototype.getVolume = function(callback) {
-  this._getVolumeInformation(function(err, volumeInformation) {
+  this._getVolumeInformation((function(err, volumeInformation) {
     if(!err) {
       callback(err, volumeInformation.volume);
     }
     else {
       callback(err);
     }
-  });
+  }).bind(this));
 };
 
 BraviaHomebridgeTV.prototype.setVolume = function(volume, callback) {
   var bravia = this.bravia;
-  this.getPowerState(function(err, isPoweredOn) {
+  this.getPowerState((function(err, isPoweredOn) {
     if(err) {
       callback(err);
     }
@@ -320,12 +320,12 @@ BraviaHomebridgeTV.prototype.setVolume = function(volume, callback) {
       then(() => callback(null, volume))
       .catch(error => callback(error));
     }
-  });
+  }).bind(this));
 };
 
 BraviaHomebridgeTV.prototype._getVolumeInformation = function(callback) {
   var bravia = this.bravia;
-  this.getPowerState(function(err, isPoweredOn) {
+  this.getPowerState((function(err, isPoweredOn) {
     if(err) {
       callback(err);
     }
@@ -346,12 +346,12 @@ BraviaHomebridgeTV.prototype._getVolumeInformation = function(callback) {
       })
       .catch(error => callback(error, null));
     }
-  });
+  }).bind(this));
 };
 
 BraviaHomebridgeTV.prototype.setRemoteKey = function(key, callback) {
   var bravia = this.bravia;
-  this.getPowerState(function(err, isPoweredOn) {
+  this.getPowerState((function(err, isPoweredOn) {
     if(err) {
       callback(err);
     }
@@ -405,7 +405,7 @@ BraviaHomebridgeTV.prototype.setRemoteKey = function(key, callback) {
       then(() => callback(null, key))
       .catch(error => callback(err));
     }
-  });
+  }).bind(this));
 };
 
 BraviaHomebridgeTV.prototype.getServices = function() {
