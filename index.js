@@ -71,7 +71,7 @@ function BraviaHomebridgeTV(log, config) {
   }
   this.tvService.setCharacteristic(Characteristic.ActiveIdentifier, this.inputSources.length -1);
   
-  setInterval(this._update, pollInterval);
+  setInterval(this._update.bind(this), pollInterval);
 };
 
 BraviaHomebridgeTV.prototype._addInput = function(config, inputSourceId) {
