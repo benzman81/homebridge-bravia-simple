@@ -42,7 +42,7 @@ function BraviaHomebridgeTV(log, config) {
   var informationService = new Service.AccessoryInformation();
   informationService.setCharacteristic(Characteristic.Manufacturer, "BraviaSimpleHomebridgePlatform");
   informationService.setCharacteristic(Characteristic.Model, "BraviaHomebridgeTV-"+this.name);
-  informationService.setCharacteristic(Characteristic.SerialNumber, id);
+  informationService.setCharacteristic(Characteristic.SerialNumber, this.id);
   this.services.push(informationService);
   
   this.tvService = new Service.Television(this.name);
