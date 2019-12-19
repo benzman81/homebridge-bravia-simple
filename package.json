@@ -1,0 +1,34 @@
+{
+  "name": "homebridge-bravia-simple",
+  "version": "0.0.1",
+  "description": "A simple plugin to control sony bravia for Homebridge: https://github.com/nfarina/homebridge",
+  "license": "GPL-3.0",
+  "keywords": [
+    "homebridge-plugin",
+    "homebridge",
+    "plugin",
+    "sony",
+    "bravia",
+    "smart",
+    "homekit",
+    "siri"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:benzman81/homebridge-bravia-simple.git"
+  },
+  "bugs": {
+    "url": "https://github.com/benzman81/homebridge-bravia-simple/issues"
+  },
+  "engines": {
+    "node": ">=0.12.0",
+    "homebridge": ">=0.3.0"
+  },
+  "dependencies": {
+    "bravia": "1.2.0",
+    "is-reachable": "4.0.0",
+    "hap-nodejs": "0.4.51"
+  },
+  "homepage": "https://github.com/benzman81/homebridge-bravia-simple#readme",
+  "author": "benzman81"
+}
