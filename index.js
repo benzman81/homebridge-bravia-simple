@@ -85,6 +85,7 @@ BraviaHomebridgeTV.prototype._addInput = function(config, inputSourceId) {
   this.services.push(inputSource);
   this.tvService.addLinkedService(inputSource);
   this.inputSources[inputSourceId] = inputSource;
+  this.log("Input created:"+inputSourceId+" "+config.name);
 };
 
 BraviaHomebridgeTV.prototype._getSourceType = function(source) {
@@ -111,12 +112,14 @@ BraviaHomebridgeTV.prototype._update = function(config, inputSourceId) {
   var bravia = this.bravia;
   this.getActiveIdentifier((function(err, activeId) {
     if(err) {
+      this.log("Background update:"+false+" "+0);
       this.tvService.getCharacteristic(Characteristic.Active).updateValue(false);
       this.tvService.getCharacteristic(Characteristic.ActiveIdentifier).updateValue(0);
     }
     else {
       this.tvService.getCharacteristic(Characteristic.Active).updateValue(true);
       this.tvService.getCharacteristic(Characteristic.ActiveIdentifier).updateValue(activeId);
+      this.log("Background update:"+true+" "+activeId);
     }
   }).bind(this));
 };
@@ -124,6 +127,7 @@ BraviaHomebridgeTV.prototype._update = function(config, inputSourceId) {
 BraviaHomebridgeTV.prototype.setPowerState = function(state, callback) {
   var bravia = this.bravia;
   this.getPowerState((function(err, isPoweredOn) {
+    this.log("setPowerState to:"+state +" from "+ isPoweredOn);
     if(!err && state !== isPoweredOn) {
       bravia.system.invoke('setPowerStatus', '1.0', { status: state }).
       then(() => callback(null, state))
@@ -168,6 +172,7 @@ BraviaHomebridgeTV.prototype.setActiveIdentifier = function(identifier, callback
       callback(new Error("Bravia '"+this.name+"' is not powered on."));
     }
     else {
+      this.log("setActiveIdentifier to:"+identifier);
       var inputSource = this.inputSources[identifier];
       var config = inputSource.hb_config;
       if(config.source.indexOf("extInput:") !== -1) {
@@ -239,6 +244,7 @@ BraviaHomebridgeTV.prototype.getActiveIdentifier = function(callback) {
             }
           }
         }
+        this.log("getActiveIdentifier to:"+activeId);
         callback(null, activeId);
       })
       .catch(error => callback(error));
@@ -249,6 +255,7 @@ BraviaHomebridgeTV.prototype.getActiveIdentifier = function(callback) {
 BraviaHomebridgeTV.prototype.getMuted = function(callback) {
   this._getVolumeInformation((function(err, volumeInformation) {
     if(!err) {
+      this.log("getMuted to:"+volumeInformation.mute);
       callback(err, volumeInformation.mute);
     }
     else {
@@ -267,6 +274,7 @@ BraviaHomebridgeTV.prototype.setMuted = function(muted, callback) {
       callback(new Error("Bravia '"+this.name+"' is not powered on."));
     }
     else {
+      this.log("setMuted to:"+muted);
       bravia.audio.invoke('setAudioMute', '1.0', { status: muted }).
       then(() => callback(null, muted))
       .catch(error => callback(error));
@@ -288,6 +296,7 @@ BraviaHomebridgeTV.prototype.setVolumeSelector = function(key, callback) {
       if(key === Characteristic.VolumeSelector.INCREMENT) {
         commandName = "VolumeUp";
       }
+      this.log("setVolumeSelector:"+commandName);
       bravia.send(commandName).
       then(() => callback(null, key))
       .catch(error => callback(error));
@@ -298,6 +307,7 @@ BraviaHomebridgeTV.prototype.setVolumeSelector = function(key, callback) {
 BraviaHomebridgeTV.prototype.getVolume = function(callback) {
   this._getVolumeInformation((function(err, volumeInformation) {
     if(!err) {
+      this.log("getVolume:"+volumeInformation.volume);
       callback(err, volumeInformation.volume);
     }
     else {
@@ -316,6 +326,7 @@ BraviaHomebridgeTV.prototype.setVolume = function(volume, callback) {
       callback(new Error("Bravia '"+this.name+"' is not powered on."));
     }
     else {
+      this.log("setVolume:"+volume);
       bravia.audio.invoke('setAudioVolume', '1.0', { target: 'speaker', volume: ''+volume }).
       then(() => callback(null, volume))
       .catch(error => callback(error));
@@ -401,6 +412,7 @@ BraviaHomebridgeTV.prototype.setRemoteKey = function(key, callback) {
           value="Display";
           break;
       }
+      this.log("setRemoteKey:"+commandName);
       bravia.send(commandName).
       then(() => callback(null, key))
       .catch(error => callback(err));
