@@ -65,7 +65,8 @@ function BraviaHomebridgeTV(log, config) {
   
   var inputs = config.inputs || [];
   inputs.push({"name":"Unknown", "source": "other", "num": -1});
-  for (var i = 0; i < inputs; i++) {
+  
+  for (var i = 0; i < inputs.length; i++) {
     var input = inputs[i]
     this._addInput(input, i);
   }
@@ -112,14 +113,14 @@ BraviaHomebridgeTV.prototype._update = function(config, inputSourceId) {
   var bravia = this.bravia;
   this.getActiveIdentifier((function(err, activeId) {
     if(err) {
-      this.log("Background update:"+false+" "+0);
+      //this.log("Background update:"+false+" "+0);
       this.tvService.getCharacteristic(Characteristic.Active).updateValue(false);
       this.tvService.getCharacteristic(Characteristic.ActiveIdentifier).updateValue(0);
     }
     else {
       this.tvService.getCharacteristic(Characteristic.Active).updateValue(true);
       this.tvService.getCharacteristic(Characteristic.ActiveIdentifier).updateValue(activeId);
-      this.log("Background update:"+true+" "+activeId);
+      //this.log("Background update:"+true+" "+activeId);
     }
   }).bind(this));
 };
