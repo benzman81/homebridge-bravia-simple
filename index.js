@@ -53,6 +53,8 @@ function BraviaHomebridgeTV(log, config) {
   this.tvService.getCharacteristic(Characteristic.ActiveIdentifier).on('set', this.setActiveIdentifier.bind(this)).on('get', this.getActiveIdentifier.bind(this));
   this.tvService.getCharacteristic(Characteristic.RemoteKey).on('set', this.setRemoteKey.bind(this));
   this.services.push(this.tvService);
+  //TODO PowerModeSelection?
+  //TODO Characteristic.PictureMode?
   
   this.speakerService = new Service.TelevisionSpeaker();
   this.speakerService.setCharacteristic(Characteristic.Active, Characteristic.Active.ACTIVE);
@@ -61,6 +63,7 @@ function BraviaHomebridgeTV(log, config) {
   this.speakerService.getCharacteristic(Characteristic.VolumeSelector).on('set', this.setVolumeSelector.bind(this));
   this.speakerService.getCharacteristic(Characteristic.Mute).on('get', this.getMuted.bind(this)).on('set', this.setMuted.bind(this));
   this.speakerService.getCharacteristic(Characteristic.Volume).on('get', this.getVolume.bind(this)).on('set', this.setVolume.bind(this));
+  this.tvService.addLinkedService(this.speakerService);
   this.services.push(this.speakerService);
   
   var inputs = config.inputs || [];
