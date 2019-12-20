@@ -76,7 +76,7 @@ function BraviaHomebridgeTV(log, config) {
 };
 
 BraviaHomebridgeTV.prototype._addInput = function(config, inputSourceId) {
-  var inputSource = new Service.InputSource(config.name);
+  var inputSource = new Service.InputSource(config.name, "InputSource-id-"+inputSourceId);
   inputSource.setCharacteristic(Characteristic.Identifier, inputSourceId)
     .setCharacteristic(Characteristic.ConfiguredName, config.name)
     .setCharacteristic(Characteristic.CurrentVisibilityState, Characteristic.CurrentVisibilityState.SHOWN)
