@@ -36,6 +36,9 @@ function BraviaHomebridgeTV(log, config) {
   this.services = [];
   this.inputSources = [];
   
+  var inputs = config.inputs || [];
+  //inputs.push({"name":"Unknown", "source": "other", "num": 1});  // TODO
+  
   this.bravia = new Bravia(config.ip, port,  config.psk);
 
   var informationService = new Service.AccessoryInformation();
@@ -48,7 +51,7 @@ function BraviaHomebridgeTV(log, config) {
   this.tvService.setCharacteristic(Characteristic.ConfiguredName, this.name);
   this.tvService.setCharacteristic(Characteristic.SleepDiscoveryMode, Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE);
   this.tvService.getCharacteristic(Characteristic.Active).on('set', this.setPowerState.bind(this)).on('get', this.getPowerState.bind(this));
-  
+  this.tvService.setCharacteristic(Characteristic.ActiveIdentifier, 0); // TODO
   this.tvService.getCharacteristic(Characteristic.ActiveIdentifier).on('set', this.setActiveIdentifier.bind(this)).on('get', this.getActiveIdentifier.bind(this));
   this.tvService.getCharacteristic(Characteristic.RemoteKey).on('set', this.setRemoteKey.bind(this));
   this.services.push(this.tvService);
@@ -65,15 +68,10 @@ function BraviaHomebridgeTV(log, config) {
   this.tvService.addLinkedService(this.speakerService);
   this.services.push(this.speakerService);
   
-  var inputs = config.inputs || [];
-  inputs.push({"name":"Unknown", "source": "other", "num": -1});
-  
   for (var i = 0; i < inputs.length; i++) {
     var input = inputs[i]
     this._addInput(input, i);
   }
-  this.tvService.setCharacteristic(Characteristic.ActiveIdentifier, this.inputSources.length -1);
-  
   setInterval(this._update.bind(this), pollInterval);
 };
 
