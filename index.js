@@ -68,10 +68,13 @@ function BraviaHomebridgeTV(log, config) {
   this.tvService.addLinkedService(this.speakerService);
   this.services.push(this.speakerService);
   
-  for (var i = 0; i < inputs.length; i++) {
-    var input = inputs[i]
-    this._addInput(input, i);
-  }
+  setTimeout((function(){
+    for (var i = 0; i < inputs.length; i++) {
+      var input = inputs[i]
+      this._addInput(input, i);
+    }
+  }).bind(this), 5000);
+  
   setInterval(this._update.bind(this), pollInterval);
 };
 
