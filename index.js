@@ -234,7 +234,7 @@ BraviaHomebridgeTV.prototype.getActiveIdentifier = function(callback) {
           if(source.indexOf("extInput:") !== -1) {
             var uri = playingContentInfo.uri;
             for (var i = 0; i < this.inputSources.length; i++) {
-              var inputSource = inputSources[i];
+              var inputSource = this.inputSources[i];
               if(!inputSource|| !inputSource.hb_config){
                 continue;
               }
@@ -248,7 +248,7 @@ BraviaHomebridgeTV.prototype.getActiveIdentifier = function(callback) {
           else {
             var dispNum = playingContentInfo.dispNum;
             for (var i = 0; i < this.inputSources.length; i++) {
-              var inputSource = inputSources[i];
+              var inputSource = this.inputSources[i];
               if(!inputSource || !inputSource.hb_config){
                 continue;
               }
