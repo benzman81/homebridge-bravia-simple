@@ -171,7 +171,7 @@ BraviaHomebridgeTV.prototype.getPowerState = function(callback) {
 
 BraviaHomebridgeTV.prototype.setActiveIdentifier = function(identifier, callback) {
   if(identifier === this.unknownActiveIdentifier) {
-    callback(null);
+    callback(null, identifier);
     return;
   }
   var bravia = this.bravia;
@@ -191,7 +191,7 @@ BraviaHomebridgeTV.prototype.setActiveIdentifier = function(identifier, callback
         var uri = config.source+"?port="+config.num;
         bravia.avContent.invoke('setPlayContent', '1.0', { "uri": uri}).
         then(() => { 
-          callback(null)
+          callback(null, identifier);
         })
         .catch(error => callback(error));
       }
@@ -208,7 +208,7 @@ BraviaHomebridgeTV.prototype.setActiveIdentifier = function(identifier, callback
           }
           bravia.avContent.invoke('setPlayContent', '1.0', { "uri": uri}).
           then(() => { 
-            callback(null)
+            callback(null, identifier);
           })
           .catch(error => callback(error));
         })
@@ -236,13 +236,13 @@ BraviaHomebridgeTV.prototype.getActiveIdentifier = function(callback) {
           var source = playingContentInfo.source;
           if(source.indexOf("extInput:") !== -1) {
             var uri = playingContentInfo.uri;
-            for (var i = 0; i < this.inputSources.length; i++) {
+            for (var i = 1; i < this.inputSources.length + 1; i++) {
               var inputSource = this.inputSources[i];
               if(!inputSource|| !inputSource.hb_config){
                 continue;
               }
               var config = inputSource.hb_config;
-              if(config.source === source && uri.indexOf("?port="+config.num)) {
+              if(config.source === source && uri.indexOf("?port="+config.num) !== -1) {
                 activeId = i;
                 break;
               }
@@ -250,7 +250,7 @@ BraviaHomebridgeTV.prototype.getActiveIdentifier = function(callback) {
           }
           else {
             var dispNum = playingContentInfo.dispNum;
-            for (var i = 0; i < this.inputSources.length; i++) {
+            for (var i = 1; i < this.inputSources.length + 1; i++) {
               var inputSource = this.inputSources[i];
               if(!inputSource || !inputSource.hb_config){
                 continue;
