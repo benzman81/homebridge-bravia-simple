@@ -123,7 +123,7 @@ BraviaHomebridgeTV.prototype._update = function() {
     if(err) {
       this.log("Background update with error:"+false+" "+0, err);
       this.tvService.getCharacteristic(Characteristic.Active).updateValue(false);
-      this.tvService.getCharacteristic(Characteristic.ActiveIdentifier).updateValue(0);
+      this.tvService.getCharacteristic(Characteristic.ActiveIdentifier).updateValue(this.unknownActiveIdentifier);
     }
     else {
       this.tvService.getCharacteristic(Characteristic.Active).updateValue(true);
