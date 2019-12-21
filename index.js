@@ -38,7 +38,7 @@ function BraviaHomebridgeTV(log, config) {
   this.unknownActiveIdentifier = 99;
   
   var inputs = config.inputs || [];
-  inputs.push({"name":"Unknown", "source": "other", "num": unknownActiveIdentifier});
+  inputs.push({"name":"Unknown", "source": "other", "num": this.unknownActiveIdentifier});
   
   this.bravia = new Bravia(config.ip, port,  config.psk);
 
@@ -52,7 +52,7 @@ function BraviaHomebridgeTV(log, config) {
   this.tvService.setCharacteristic(Characteristic.ConfiguredName, this.name);
   this.tvService.setCharacteristic(Characteristic.SleepDiscoveryMode, Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE);
   this.tvService.getCharacteristic(Characteristic.Active).on('set', this.setPowerState.bind(this)).on('get', this.getPowerState.bind(this));
-  this.tvService.setCharacteristic(Characteristic.ActiveIdentifier, unknownActiveIdentifier);
+  this.tvService.setCharacteristic(Characteristic.ActiveIdentifier, this.unknownActiveIdentifier);
   this.tvService.getCharacteristic(Characteristic.ActiveIdentifier).on('set', this.setActiveIdentifier.bind(this)).on('get', this.getActiveIdentifier.bind(this));
   this.tvService.getCharacteristic(Characteristic.RemoteKey).on('set', this.setRemoteKey.bind(this));
   this.services.push(this.tvService);
