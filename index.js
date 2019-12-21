@@ -35,10 +35,12 @@ function BraviaHomebridgeTV(log, config) {
   var pollInterval = config.pollinterval || 60000;
   this.services = [];
   this.inputSources = [];
+
+  this.unknownName = "Z_Unknown";
   this.unknownActiveIdentifier = 99;
   
   var inputs = config.inputs || [];
-  inputs.push({"name":"Unknown", "source": "other", "num": this.unknownActiveIdentifier});
+  inputs.push({"name": this.unknownName, "source": "other", "num": 1});
   
   this.bravia = new Bravia(config.ip, port,  config.psk);
 
@@ -78,8 +80,12 @@ function BraviaHomebridgeTV(log, config) {
 };
 
 BraviaHomebridgeTV.prototype._addInput = function(config, inputSourceId) {
-  var inputSource = new Service.InputSource(config.name, "input-"+inputSourceId);
-  inputSource.setCharacteristic(Characteristic.Identifier, inputSourceId)
+  var idToUse = inputSourceId;
+  if(this.unknownName === config.name) {
+    idToUse = this.unknownActiveIdentifier;
+  }
+  var inputSource = new Service.InputSource(config.name, "input-"+idToUse);
+  inputSource.setCharacteristic(Characteristic.Identifier, idToUse)
     .setCharacteristic(Characteristic.ConfiguredName, config.name)
     .setCharacteristic(Characteristic.CurrentVisibilityState, Characteristic.CurrentVisibilityState.SHOWN)
     .setCharacteristic(Characteristic.IsConfigured, Characteristic.IsConfigured.CONFIGURED)
@@ -87,8 +93,8 @@ BraviaHomebridgeTV.prototype._addInput = function(config, inputSourceId) {
   inputSource.hb_config = config;
   this.services.push(inputSource);
   this.tvService.addLinkedService(inputSource);
-  this.inputSources[inputSourceId] = inputSource;
-  this.log("Input created:"+inputSourceId+" "+config.name);
+  this.inputSources[idToUse] = inputSource;
+  this.log("Input created:"+idToUse+" "+config.name);
 };
 
 BraviaHomebridgeTV.prototype._getSourceType = function(source) {
@@ -111,7 +117,7 @@ BraviaHomebridgeTV.prototype._getSourceType = function(source) {
   }
 };
 
-BraviaHomebridgeTV.prototype._update = function(config, inputSourceId) {
+BraviaHomebridgeTV.prototype._update = function() {
   var bravia = this.bravia;
   this.getActiveIdentifier((function(err, activeId) {
     if(err) {
@@ -229,6 +235,9 @@ BraviaHomebridgeTV.prototype.getActiveIdentifier = function(callback) {
             var uri = playingContentInfo.uri;
             for (var i = 0; i < this.inputSources.length; i++) {
               var inputSource = inputSources[i];
+              if(!inputSource|| !inputSource.hb_config){
+                continue;
+              }
               var config = inputSource.hb_config;
               if(config.source === source && uri.indexOf("?port="+config.num)) {
                 activeId = i;
@@ -240,6 +249,9 @@ BraviaHomebridgeTV.prototype.getActiveIdentifier = function(callback) {
             var dispNum = playingContentInfo.dispNum;
             for (var i = 0; i < this.inputSources.length; i++) {
               var inputSource = inputSources[i];
+              if(!inputSource || !inputSource.hb_config){
+                continue;
+              }
               var config = inputSource.hb_config;
               if(config.source === source && config.num === Number(dispNum)) {
                 activeId = i;
