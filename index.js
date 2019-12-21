@@ -35,9 +35,10 @@ function BraviaHomebridgeTV(log, config) {
   var pollInterval = config.pollinterval || 60000;
   this.services = [];
   this.inputSources = [];
+  this.unknownActiveIdentifier = 99;
   
   var inputs = config.inputs || [];
-  //inputs.push({"name":"Unknown", "source": "other", "num": 1});  // TODO
+  inputs.push({"name":"Unknown", "source": "other", "num": unknownActiveIdentifier});
   
   this.bravia = new Bravia(config.ip, port,  config.psk);
 
@@ -51,7 +52,7 @@ function BraviaHomebridgeTV(log, config) {
   this.tvService.setCharacteristic(Characteristic.ConfiguredName, this.name);
   this.tvService.setCharacteristic(Characteristic.SleepDiscoveryMode, Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE);
   this.tvService.getCharacteristic(Characteristic.Active).on('set', this.setPowerState.bind(this)).on('get', this.getPowerState.bind(this));
-  this.tvService.setCharacteristic(Characteristic.ActiveIdentifier, 0); // TODO
+  this.tvService.setCharacteristic(Characteristic.ActiveIdentifier, unknownActiveIdentifier);
   this.tvService.getCharacteristic(Characteristic.ActiveIdentifier).on('set', this.setActiveIdentifier.bind(this)).on('get', this.getActiveIdentifier.bind(this));
   this.tvService.getCharacteristic(Characteristic.RemoteKey).on('set', this.setRemoteKey.bind(this));
   this.services.push(this.tvService);
@@ -68,18 +69,16 @@ function BraviaHomebridgeTV(log, config) {
   this.tvService.addLinkedService(this.speakerService);
   this.services.push(this.speakerService);
   
-  //setTimeout((function(){
-    for (var i = 0; i < inputs.length; i++) {
-      var input = inputs[i]
-      this._addInput(input, i);
-    }
-  //}).bind(this), 5000);
+  for (var i = 1; i < inputs.length+1; i++) {
+    var input = inputs[i-1]
+    this._addInput(input, i);
+  }
   
   setInterval(this._update.bind(this), pollInterval);
 };
 
 BraviaHomebridgeTV.prototype._addInput = function(config, inputSourceId) {
-  var inputSource = new Service.InputSource(config.name, "inputSource-"+inputSourceId);
+  var inputSource = new Service.InputSource(config.name, "input-"+inputSourceId);
   inputSource.setCharacteristic(Characteristic.Identifier, inputSourceId)
     .setCharacteristic(Characteristic.ConfiguredName, config.name)
     .setCharacteristic(Characteristic.CurrentVisibilityState, Characteristic.CurrentVisibilityState.SHOWN)
@@ -164,7 +163,7 @@ BraviaHomebridgeTV.prototype.getPowerState = function(callback) {
 };
 
 BraviaHomebridgeTV.prototype.setActiveIdentifier = function(identifier, callback) {
-  if(identifier === this.inputSources.length -1) {
+  if(identifier === this.unknownActiveIdentifier) {
     callback(null);
     return;
   }
@@ -223,7 +222,7 @@ BraviaHomebridgeTV.prototype.getActiveIdentifier = function(callback) {
     else {
       bravia.avContent.invoke('getPlayingContentInfo', '1.0').
       then(playingContentInfo => {
-        var activeId = this.inputSources.length -1;
+        var activeId = this.unknownActiveIdentifier;
         if(playingContentInfo) {
           var source = playingContentInfo.source;
           if(source.indexOf("extInput:") !== -1) {
