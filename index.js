@@ -68,28 +68,47 @@ function BraviaHomebridgeTV(log, config) {
   this.tvService.addLinkedService(this.speakerService);
   this.services.push(this.speakerService);
   
-  setTimeout((function(){
+  //setTimeout((function(){ // TODO
     for (var i = 0; i < inputs.length; i++) {
       var input = inputs[i]
       this._addInput(input, i);
     }
-  }).bind(this), 5000);
+  //}).bind(this), 5000);
   
   setInterval(this._update.bind(this), pollInterval);
 };
 
 BraviaHomebridgeTV.prototype._addInput = function(config, inputSourceId) {
   var inputSource = new Service.InputSource(config.name, "InputSource-id-"+inputSourceId);
-  inputSource.setCharacteristic(Characteristic.Identifier, inputSourceId)
-    .setCharacteristic(Characteristic.ConfiguredName, config.name)
-    .setCharacteristic(Characteristic.CurrentVisibilityState, Characteristic.CurrentVisibilityState.SHOWN)
-    .setCharacteristic(Characteristic.IsConfigured, Characteristic.IsConfigured.CONFIGURED)
-    .setCharacteristic(Characteristic.InputSourceType, this._getSourceType(config.source));
-  inputSource.hb_config = config;
+  
+  inputSource
+  .setCharacteristic(Characteristic.Identifier, 1)
+  .setCharacteristic(Characteristic.ConfiguredName, "HDMI "+inputSourceId)
+  .setCharacteristic(Characteristic.IsConfigured, Characteristic.IsConfigured.CONFIGURED)
+  .setCharacteristic(Characteristic.InputSourceType, Characteristic.InputSourceType.HDMI);
+  
+
+  inputSource.hb_config = {
+      "source": "extInput:hdmi",
+      "num": 1
+      };
   this.services.push(inputSource);
   this.tvService.addLinkedService(inputSource);
   this.inputSources[inputSourceId] = inputSource;
-  this.log("Input created:"+inputSourceId+" "+config.name);
+  this.log("Input created:"+inputSourceId+" ");
+  
+  
+  //var inputSource = new Service.InputSource(config.name, "InputSource-id-"+inputSourceId);
+  //inputSource.setCharacteristic(Characteristic.Identifier, inputSourceId)
+  //  .setCharacteristic(Characteristic.ConfiguredName, config.name)
+  //  .setCharacteristic(Characteristic.CurrentVisibilityState, Characteristic.CurrentVisibilityState.SHOWN)
+  //  .setCharacteristic(Characteristic.IsConfigured, Characteristic.IsConfigured.CONFIGURED)
+  //  .setCharacteristic(Characteristic.InputSourceType, this._getSourceType(config.source));
+  //inputSource.hb_config = config;
+  //this.services.push(inputSource);
+  //this.tvService.addLinkedService(inputSource);
+  //this.inputSources[inputSourceId] = inputSource;
+  //this.log("Input created:"+inputSourceId+" "+config.name);
 };
 
 BraviaHomebridgeTV.prototype._getSourceType = function(source) {
