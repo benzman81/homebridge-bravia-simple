@@ -121,7 +121,7 @@ BraviaHomebridgeTV.prototype._update = function() {
   var bravia = this.bravia;
   this.getActiveIdentifier((function(err, activeId) {
     if(err) {
-      this.log("Background update:"+false+" "+0);
+      this.log("Background update with error:"+false+" "+0, err);
       this.tvService.getCharacteristic(Characteristic.Active).updateValue(false);
       this.tvService.getCharacteristic(Characteristic.ActiveIdentifier).updateValue(0);
     }
