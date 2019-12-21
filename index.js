@@ -36,7 +36,7 @@ function BraviaHomebridgeTV(log, config) {
   this.services = [];
   this.inputSources = [];
 
-  this.unknownName = "Z_Unknown";
+  this.unknownName = "ZZ_Unknown";
   this.unknownActiveIdentifier = 99;
   
   var inputs = config.inputs || [];
@@ -134,9 +134,10 @@ BraviaHomebridgeTV.prototype._update = function() {
 };
 
 BraviaHomebridgeTV.prototype.setPowerState = function(state, callback) {
-  var toPoweredOn = state === 1;
+  var toPoweredOn = state === Characteristic.Active.ACTIVE;
   var bravia = this.bravia;
-  this.getPowerState((function(err, isPoweredOn) {
+  this.getPowerState((function(err, isPoweredOnHomeKit) {
+    var isPoweredOn = isPoweredOnHomeKit === Characteristic.Active.ACTIVE;
     this.log("setPowerState to:"+toPoweredOn +" from "+ isPoweredOn);
     if(!err && toPoweredOn !== isPoweredOn) {
       bravia.system.invoke('setPowerStatus', '1.0', { status: toPoweredOn }).
@@ -161,7 +162,7 @@ BraviaHomebridgeTV.prototype.getPowerState = function(callback) {
       });
     }
   }).then(info => {
-    callback(null, info.status === "active" ? 1 : 0);
+    callback(null, info.status === "active" ? Characteristic.Active.ACTIVE : Characteristic.Active.INACTIVE);
   })
   .catch(error => {
     callback(error);
@@ -174,7 +175,8 @@ BraviaHomebridgeTV.prototype.setActiveIdentifier = function(identifier, callback
     return;
   }
   var bravia = this.bravia;
-  this.getPowerState((function(err, isPoweredOn) {
+  this.getPowerState((function(err, isPoweredOnHomeKit) {
+    var isPoweredOn = isPoweredOnHomeKit === Characteristic.Active.ACTIVE;
     if(err) {
       callback(err);
     }
@@ -218,7 +220,8 @@ BraviaHomebridgeTV.prototype.setActiveIdentifier = function(identifier, callback
 
 BraviaHomebridgeTV.prototype.getActiveIdentifier = function(callback) {
   var bravia = this.bravia;
-  this.getPowerState((function(err, isPoweredOn) {
+  this.getPowerState((function(err, isPoweredOnHomeKit) {
+    var isPoweredOn = isPoweredOnHomeKit === Characteristic.Active.ACTIVE;
     if(err) {
       callback(err);
     }
@@ -282,7 +285,8 @@ BraviaHomebridgeTV.prototype.getMuted = function(callback) {
 
 BraviaHomebridgeTV.prototype.setMuted = function(muted, callback) {
   var bravia = this.bravia;
-  this.getPowerState((function(err, isPoweredOn) {
+  this.getPowerState((function(err, isPoweredOnHomeKit) {
+    var isPoweredOn = isPoweredOnHomeKit === Characteristic.Active.ACTIVE;
     if(err) {
       callback(err);
     }
@@ -300,7 +304,8 @@ BraviaHomebridgeTV.prototype.setMuted = function(muted, callback) {
 
 BraviaHomebridgeTV.prototype.setVolumeSelector = function(key, callback) {
   var bravia = this.bravia;
-  this.getPowerState((function(err, isPoweredOn) {
+  this.getPowerState((function(err, isPoweredOnHomeKit) {
+    var isPoweredOn = isPoweredOnHomeKit === Characteristic.Active.ACTIVE;
     if(err) {
       callback(err);
     }
@@ -334,7 +339,8 @@ BraviaHomebridgeTV.prototype.getVolume = function(callback) {
 
 BraviaHomebridgeTV.prototype.setVolume = function(volume, callback) {
   var bravia = this.bravia;
-  this.getPowerState((function(err, isPoweredOn) {
+  this.getPowerState((function(err, isPoweredOnHomeKit) {
+    var isPoweredOn = isPoweredOnHomeKit === Characteristic.Active.ACTIVE;
     if(err) {
       callback(err);
     }
@@ -352,7 +358,8 @@ BraviaHomebridgeTV.prototype.setVolume = function(volume, callback) {
 
 BraviaHomebridgeTV.prototype._getVolumeInformation = function(callback) {
   var bravia = this.bravia;
-  this.getPowerState((function(err, isPoweredOn) {
+  this.getPowerState((function(err, isPoweredOnHomeKit) {
+    var isPoweredOn = isPoweredOnHomeKit === Characteristic.Active.ACTIVE;
     if(err) {
       callback(err);
     }
@@ -378,7 +385,8 @@ BraviaHomebridgeTV.prototype._getVolumeInformation = function(callback) {
 
 BraviaHomebridgeTV.prototype.setRemoteKey = function(key, callback) {
   var bravia = this.bravia;
-  this.getPowerState((function(err, isPoweredOn) {
+  this.getPowerState((function(err, isPoweredOnHomeKit) {
+    var isPoweredOn = isPoweredOnHomeKit === Characteristic.Active.ACTIVE;
     if(err) {
       callback(err);
     }
