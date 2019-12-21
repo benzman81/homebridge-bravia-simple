@@ -8,7 +8,6 @@ module.exports = function(homebridge) {
   Characteristic = homebridge.hap.Characteristic;
 
   homebridge.registerPlatform("homebridge-bravia-simple", "BraviaSimpleHomebridgePlatform", BraviaSimpleHomebridgePlatform);
-  homebridge.registerAccessory("homebridge-bravia-simple", "BraviaHomebridgeTV", BraviaHomebridgeTV);
 };
 
 function BraviaSimpleHomebridgePlatform(log, config) {
@@ -53,8 +52,8 @@ function BraviaHomebridgeTV(log, config) {
   this.tvService.getCharacteristic(Characteristic.ActiveIdentifier).on('set', this.setActiveIdentifier.bind(this)).on('get', this.getActiveIdentifier.bind(this));
   this.tvService.getCharacteristic(Characteristic.RemoteKey).on('set', this.setRemoteKey.bind(this));
   this.services.push(this.tvService);
-  //TODO PowerModeSelection?
-  //TODO Characteristic.PictureMode?
+  // TODO PowerModeSelection?
+  // TODO Characteristic.PictureMode?
   
   this.speakerService = new Service.TelevisionSpeaker();
   this.speakerService.setCharacteristic(Characteristic.Active, Characteristic.Active.ACTIVE);
@@ -116,14 +115,14 @@ BraviaHomebridgeTV.prototype._update = function(config, inputSourceId) {
   var bravia = this.bravia;
   this.getActiveIdentifier((function(err, activeId) {
     if(err) {
-      //this.log("Background update:"+false+" "+0);
+      this.log("Background update:"+false+" "+0);
       this.tvService.getCharacteristic(Characteristic.Active).updateValue(false);
       this.tvService.getCharacteristic(Characteristic.ActiveIdentifier).updateValue(0);
     }
     else {
       this.tvService.getCharacteristic(Characteristic.Active).updateValue(true);
       this.tvService.getCharacteristic(Characteristic.ActiveIdentifier).updateValue(activeId);
-      //this.log("Background update:"+true+" "+activeId);
+      this.log("Background update:"+true+" "+activeId);
     }
   }).bind(this));
 };
