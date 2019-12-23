@@ -89,7 +89,8 @@ BraviaHomebridgeTV.prototype._addInput = function(config, inputSourceId) {
     .setCharacteristic(Characteristic.ConfiguredName, config.name)
     .setCharacteristic(Characteristic.CurrentVisibilityState, Characteristic.CurrentVisibilityState.SHOWN)
     .setCharacteristic(Characteristic.IsConfigured, Characteristic.IsConfigured.CONFIGURED)
-    .setCharacteristic(Characteristic.InputSourceType, this._getSourceType(config.source));
+    .setCharacteristic(Characteristic.InputSourceType, this._getSourceType(config.source))
+    .setCharacteristic(Characteristic.InputDeviceType, config.source.indexOf("tv:") !== -1 ? Characteristic.InputDeviceType.TUNER : Characteristic.InputDeviceType.OTHER);
   inputSource.hb_config = config;
   this.services.push(inputSource);
   this.tvService.addLinkedService(inputSource);
