@@ -57,9 +57,16 @@ function BraviaHomebridgeTV(log, config) {
   this.tvService.setCharacteristic(Characteristic.ActiveIdentifier, this.unknownActiveIdentifier);
   this.tvService.getCharacteristic(Characteristic.ActiveIdentifier).on('set', this.setActiveIdentifier.bind(this)).on('get', this.getActiveIdentifier.bind(this));
   this.tvService.getCharacteristic(Characteristic.RemoteKey).on('set', this.setRemoteKey.bind(this));
+  this.tvService.getCharacteristic(Characteristic.PowerModeSelection).on('set', this.setPowerModeSelection.bind(this));
   this.services.push(this.tvService);
-  // TODO PowerModeSelection?
-  // TODO Characteristic.PictureMode?
+  // Optional Characteristics
+  // TODO this.addOptionalCharacteristic(Characteristic.Brightness);
+  // TODO this.addOptionalCharacteristic(Characteristic.ClosedCaptions);
+  // TODO this.addOptionalCharacteristic(Characteristic.DisplayOrder);
+  // TODO this.addOptionalCharacteristic(Characteristic.CurrentMediaState);
+  // TODO this.addOptionalCharacteristic(Characteristic.TargetMediaState);
+  // TODO this.addOptionalCharacteristic(Characteristic.PictureMode);
+  
   
   this.speakerService = new Service.TelevisionSpeaker(this.name + ' Volume', 'tvSpeakerService');
   this.speakerService.setCharacteristic(Characteristic.Active, Characteristic.Active.ACTIVE);
@@ -440,6 +447,26 @@ BraviaHomebridgeTV.prototype.setRemoteKey = function(key, callback) {
       this.log("setRemoteKey:"+commandName);
       bravia.send(commandName).
       then(() => callback(null, key))
+      .catch(error => callback(err));
+    }
+  }).bind(this));
+};
+
+BraviaHomebridgeTV.prototype.setPowerModeSelection = function(newValue, callback) {
+  var bravia = this.bravia;
+  this.getPowerState((function(err, isPoweredOnHomeKit) {
+    var isPoweredOn = isPoweredOnHomeKit === Characteristic.Active.ACTIVE;
+    if(err) {
+      callback(err);
+    }
+    else if(!isPoweredOn) {
+      callback(new Error("Bravia '"+this.name+"' is not powered on."));
+    }
+    else {
+      var commandName = "ActionMenu";
+      this.log("setPowerModeSelection for value '"+newValue+"':"+commandName);
+      bravia.send(commandName).
+      then(() => callback(null, newValue))
       .catch(error => callback(err));
     }
   }).bind(this));
