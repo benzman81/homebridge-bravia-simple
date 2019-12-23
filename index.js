@@ -397,43 +397,43 @@ BraviaHomebridgeTV.prototype.setRemoteKey = function(key, callback) {
       var commandName = null;
       switch(key){
         case Characteristic.RemoteKey.REWIND:
-          value="Rewind";
+          commandName="Rewind";
           break;
         case Characteristic.RemoteKey.FAST_FORWARD:
-          value="Forward";
+          commandName="Forward";
           break;
         case Characteristic.RemoteKey.NEXT_TRACK:
-          value="Next";
+          commandName="Next";
           break;
         case Characteristic.RemoteKey.PREVIOUS_TRACK:
-          value="Prev";
+          commandName="Prev";
           break;
         case Characteristic.RemoteKey.ARROW_UP:
-          value="Up";
+          commandName="Up";
           break;
         case Characteristic.RemoteKey.ARROW_DOWN:
-          value="Down";
+          commandName="Down";
           break;
         case Characteristic.RemoteKey.ARROW_LEFT:
-          value="Left";
+          commandName="Left";
           break;
         case Characteristic.RemoteKey.ARROW_RIGHT:
-          value="Right";
+          commandName="Right";
           break;
         case Characteristic.RemoteKey.SELECT:
-          value="Confirm";
+          commandName="Confirm";
           break;
         case Characteristic.RemoteKey.BACK:
-          value="Return";
+          commandName="Return";
           break;
         case Characteristic.RemoteKey.EXIT:
-          value="Exit";
+          commandName="Exit";
           break;
         case Characteristic.RemoteKey.PLAY_PAUSE:
-          value="Play";
+          commandName="Play";
           break;
         case Characteristic.RemoteKey.INFORMATION:
-          value="Display";
+          commandName="Display";
           break;
       }
       this.log("setRemoteKey:"+commandName);
