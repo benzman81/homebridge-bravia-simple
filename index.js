@@ -227,7 +227,7 @@ BraviaHomebridgeTV.prototype.setActiveIdentifier = function(identifier, callback
         .catch(error => callback(error));
       }
       else {
-        this.getUriForNumber(bravia, config.source, config.num, 0, function(err, uri) {
+        this._getUriForNumber(bravia, config.source, config.num, 0, function(err, uri) {
           if(err) {
             callback(err);
           }
