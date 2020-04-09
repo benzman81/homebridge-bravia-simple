@@ -177,6 +177,29 @@ BraviaHomebridgeTV.prototype.getPowerState = function(callback) {
  });
 };
 
+
+BraviaHomebridgeTV.prototype._getUriForNumber = function(bravia, source, number, stIdx, callback) {
+  var count = 200;
+  bravia.avContent.invoke('getContentList', '1.0', { "source": source, "stIdx":stIdx, "cnt": count}).
+  then(contentList => {
+    var uri = null;
+    for (var i = 0; i < contentList.length; i++) {
+      var content = contentList[i];
+      if(number === Number(content.dispNum)) {
+        uri = content.uri;
+        break;
+      }
+    }
+    if(!uri && contentList.length > 0) {
+      this._getUriForNumber(bravia, source, number, stIdx+count, callback);
+    }
+    else {
+      callback(null, uri);
+    }
+  })
+  .catch(error => callback(error));
+};
+
 BraviaHomebridgeTV.prototype.setActiveIdentifier = function(identifier, callback) {
   if(identifier === this.unknownActiveIdentifier) {
     callback(null, identifier);
@@ -204,23 +227,21 @@ BraviaHomebridgeTV.prototype.setActiveIdentifier = function(identifier, callback
         .catch(error => callback(error));
       }
       else {
-        bravia.avContent.invoke('getContentList', '1.0', { "source": config.source, "stIdx":0, "cnt": 9999}).
-        then(contentList => {
-          var uri = null;
-          for (var i = 0; i < contentList.length; i++) {
-            var content = contentList[i];
-            if(config.num === Number(content.dispNum)) {
-              uri = content.uri;
-              break;
-            }
+        this.getUriForNumber(bravia, config.source, config.num, 0, function(err, uri) {
+          if(err) {
+            callback(err);
           }
-          bravia.avContent.invoke('setPlayContent', '1.0', { "uri": uri}).
-          then(() => { 
-            callback(null, identifier);
-          })
-          .catch(error => callback(error));
-        })
-        .catch(error => callback(error));
+          else if(!uri){
+            callback(new Error("No uri found for config.num="+config.num));
+          }
+          else {
+            bravia.avContent.invoke('setPlayContent', '1.0', { "uri": uri}).
+            then(() => { 
+              callback(null, identifier);
+            })
+            .catch(error => callback(error));
+          }
+        });
       }
     }
   }).bind(this));
