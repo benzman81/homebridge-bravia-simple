@@ -25,6 +25,7 @@ Example config.json:
                         "port": 80,  // (optional, default 80)
                         "psk": "0000",
                         "pollinterval": 15000,  // (optional, default 60000)
+                        "add_lightbuildspeaker": false,  // (optional, default true)
                         "inputs": [
 	                        	{
 	                        		"name": "PlayStation",

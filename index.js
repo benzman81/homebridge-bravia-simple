@@ -31,6 +31,7 @@ function BraviaHomebridgeTV(log, config) {
   this.log = log;
   this.id = "id-"+config.name;
   this.name = config.name;
+  var addLightbuildspeaker = config.add_lightbuildspeaker === false ? false : true;
   var port = config.port || 80;
   var pollInterval = config.pollinterval || 60000;
   this.services = [];
@@ -73,10 +74,17 @@ function BraviaHomebridgeTV(log, config) {
   this.speakerService.setCharacteristic(Characteristic.Name, "speaker");
   this.speakerService.setCharacteristic(Characteristic.VolumeControlType, Characteristic.VolumeControlType.ABSOLUTE);
   this.speakerService.getCharacteristic(Characteristic.VolumeSelector).on('set', this.setVolumeSelector.bind(this));
-  this.speakerService.getCharacteristic(Characteristic.Mute).on('get', this.getMuted.bind(this)).on('set', this.setMuted.bind(this));
+  this.speakerService.getCharacteristic(Characteristic.Mute).on('get', this.getMuted.bind(this, false)).on('set', this.setMuted.bind(this, false));
   this.speakerService.getCharacteristic(Characteristic.Volume).on('get', this.getVolume.bind(this)).on('set', this.setVolume.bind(this));
   this.tvService.addLinkedService(this.speakerService);
   this.services.push(this.speakerService);
+  
+  if(addLightbuildspeaker) {
+    this.speakerLightBulbService = new Service.Lightbulb(this.name + ' Volume LightBulb', 'tvSpeakerLightBulbService');
+    this.speakerLightBulbService.getCharacteristic(Characteristic.On).on('get', this.getMuted.bind(this, true)).on('set', this.setMuted.bind(this, true));
+    this.speakerLightBulbService.getCharacteristic(Characteristic.Brightness).on('get', this.getVolume.bind(this)).on('set', this.setVolume.bind(this));
+    this.services.push(this.speakerLightBulbService);
+  }
   
   for (var i = 1; i < inputs.length+1; i++) {
     var input = inputs[i-1]
@@ -300,11 +308,15 @@ BraviaHomebridgeTV.prototype.getActiveIdentifier = function(callback) {
   }).bind(this));
 };
 
-BraviaHomebridgeTV.prototype.getMuted = function(callback) {
+BraviaHomebridgeTV.prototype.getMuted = function(reverse, callback) {
   this._getVolumeInformation((function(err, volumeInformation) {
     if(!err) {
-      this.log("getMuted to:"+volumeInformation.mute);
-      callback(err, volumeInformation.mute);
+      this.log("getMuted:"+volumeInformation.mute);
+      var mute = volumeInformation.mute;
+      if(reverse === true) {
+        mute = !mute;
+      }
+      callback(err, mute);
     }
     else {
       callback(err);
@@ -312,7 +324,7 @@ BraviaHomebridgeTV.prototype.getMuted = function(callback) {
   }).bind(this));
 };
 
-BraviaHomebridgeTV.prototype.setMuted = function(muted, callback) {
+BraviaHomebridgeTV.prototype.setMuted = function(reverse, muted, callback) {
   var bravia = this.bravia;
   this.getPowerState((function(err, isPoweredOnHomeKit) {
     var isPoweredOn = isPoweredOnHomeKit === Characteristic.Active.ACTIVE;
@@ -323,6 +335,9 @@ BraviaHomebridgeTV.prototype.setMuted = function(muted, callback) {
       callback(new Error("Bravia '"+this.name+"' is not powered on."));
     }
     else {
+      if(reverse === true) {
+        muted = !muted;
+      }
       this.log("setMuted to:"+muted);
       bravia.audio.invoke('setAudioMute', '1.0', { status: muted }).
       then(() => callback(null, muted))
