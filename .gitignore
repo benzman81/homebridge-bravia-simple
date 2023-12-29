@@ -5,3 +5,4 @@ package-lock.json
 demo.js
 demo2.js
 sample.js
+.DS_Store
